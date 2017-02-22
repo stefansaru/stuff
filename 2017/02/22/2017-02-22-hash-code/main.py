@@ -10,7 +10,10 @@ def validate_parameters(R,C,L,H):
       raise Exception("{}={} (expected 1<={}<=1000)".format(name,str(item),name))
 
 # --
+count_M = 0
+count_T = 0
 def validate_content(R,C,content):
+  global count_M, count_T
   old_size = len(content)
   content = [x for x in content if len(x.strip())]
   new_size = len(content)
@@ -22,7 +25,11 @@ def validate_content(R,C,content):
     if len(content[r]) != C:
       raise Exception("Input file: expected C={} columns in content row={}, actual columns={}".format(C,r,len(content[r])))
     for c in range(C):
-      if content[r][c] != 'M' and content[r][c] != 'T':
+      if content[r][c] == 'M':
+        count_M += 1
+      elif content[r][c] == 'T':
+        count_T +=1
+      else:
         raise Exception("Input file: expected character 'M' or 'T' in content row={} column={}, actual='{}'".format(r,c,content[r][c]))
 
 # --
@@ -110,4 +117,7 @@ if __name__ == "__main__":
     print("Preliminary slicing options for each point: {}".format(str(preliminary_slicing_options)))
     slicing_possibilities = get_slicing_possibilities(R,C,L,H,content,preliminary_slicing_options)
     print("Total number of unique slicing possibilities: {}".format(total_possibilities))
+    # Calculate boundaries of slice count
+    max_slice_count = min(count_M,count_T) / L
+    #min_slice_count = 
 
