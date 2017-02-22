@@ -1,12 +1,7 @@
 #!/usr/bin/env python
 
 # using python 2.7
-import sys
-
-R = int(sys.argv[1])
-C = int(sys.argv[2])
-L = int(sys.argv[3])
-H = int(sys.argv[4])
+import sys, argparse
 
 def validate_parameters(R,C,L,H):
   for item, name in [(R,'R'),(C,'C'),(L,'L'),(H,'H')]:
@@ -28,5 +23,27 @@ def get_slicing_options(R,C,L,H):
     raise Exception("Slicing is not possible for R={} C={} L={} H={}".format(str(R),str(C),str(L),str(H)))
   return sizes
 
-validate_parameters(R,C,L,H)
-print get_slice_sizes(R,C,L,H)
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser(description="Hash Code 2017 practice round. See https://goo.gl/4mtJR3")
+  parser.add_argument("input_file", help="input file")
+  parser.add_argument("output_file", help="output file")
+  args = parser.parse_args()
+  with open(args.input_file,'r') as input_file, open(args.output_file,'w') as output_file:
+    content = [line.rstrip('\n') for line in input_file]
+    if len(content) == 0:
+      raise Exception("Input file should not be empty.")
+    if len(content) < 2:
+      raise Exception("Input file should have at least two lines.")
+    first_line = content[0]
+    tokens = first_line.split(' ')
+    if len(tokens) != 4:
+      raise Exception("Expected 4 numbers on first line")
+    print("Input file R,C,L,H = {}".format(str(tokens)))
+    R = int(tokens[0])
+    C = int(tokens[1])
+    L = int(tokens[2])
+    H = int(tokens[3])
+    validate_parameters(R,C,L,H)
+    slicing_options = get_slicing_options(R,C,L,H)
+    print("Slicing options are: {}".format(str(slicing_options)))
+
