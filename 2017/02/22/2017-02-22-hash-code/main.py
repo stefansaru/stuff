@@ -18,9 +18,8 @@ def get_slicing_options(R,C,L,H):
       product = r * c
       if product <= H and product >= min_size:
         sizes.append((r,c))
-        print "{}*{}={} <= {}".format(str(r),str(c),str(r*c),str(H))
   if len(sizes) == 0:
-    raise Exception("Slicing is not possible for R={} C={} L={} H={}".format(str(R),str(C),str(L),str(H)))
+    raise Exception("Slicing is not possible for: R={} C={} L={} H={}".format(str(R),str(C),str(L),str(H)))
   return sizes
 
 if __name__ == "__main__":
@@ -31,14 +30,14 @@ if __name__ == "__main__":
   with open(args.input_file,'r') as input_file, open(args.output_file,'w') as output_file:
     content = [line.rstrip('\n') for line in input_file]
     if len(content) == 0:
-      raise Exception("Input file should not be empty.")
+      raise Exception("Input file: should not be empty.")
     if len(content) < 2:
-      raise Exception("Input file should have at least two lines.")
+      raise Exception("Input file: should have at least two lines.")
     first_line = content[0]
     tokens = first_line.split(' ')
     if len(tokens) != 4:
-      raise Exception("Expected 4 numbers on first line")
-    print("Input file R,C,L,H = {}".format(str(tokens)))
+      raise Exception("Input file: Expected 4 numbers on first line")
+    print("Input file R,C,L,H: {}".format(str(tokens)))
     R = int(tokens[0])
     C = int(tokens[1])
     L = int(tokens[2])
