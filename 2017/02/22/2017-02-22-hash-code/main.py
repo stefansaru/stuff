@@ -1,5 +1,6 @@
-#!/usr/bin/env ddddddddddddddddddddddpython
+#!/usr/bin/env python
 
+# using python 2.7
 import sys
 
 R = int(sys.argv[1])
@@ -12,7 +13,7 @@ def validate_parameters(R,C,L,H):
     if item < 1 or item > 1000:
       raise Exception("{}={} (expected 1<={}<=1000)".format(name,str(item),name))
 
-def get_slice_sizes(R,C,L,H):
+def get_slicing_options(R,C,L,H):
   sizes = []
   max_row = min(R,H)
   max_col = min(C,H)
