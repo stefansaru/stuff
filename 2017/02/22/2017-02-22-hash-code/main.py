@@ -119,5 +119,6 @@ if __name__ == "__main__":
     print("Total number of unique slicing possibilities: {}".format(total_possibilities))
     # Calculate boundaries of slice count
     max_slice_count = min(count_M,count_T) / L
+    print("Maximum number of slices: {}".format(max_slice_count))
     #min_slice_count = 
 
