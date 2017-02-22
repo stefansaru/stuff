@@ -40,6 +40,7 @@ def get_slicing_options(R,C,L,H):
     raise Exception("Slicing is not possible for: R={} C={} L={} H={}".format(str(R),str(C),str(L),str(H)))
   return preliminary_slicing_options
 
+# --
 def is_valid_slicing_option(content,r,c,size,R,C,L):
   num_rows = size[0]
   num_cols = size[1]
@@ -65,7 +66,10 @@ def is_valid_slicing_option(content,r,c,size,R,C,L):
     return False
   return True
 
+# --
+total_possibilities = 0
 def get_slicing_possibilities(R,C,L,H,content,preliminary_slicing_options):
+  global total_possibilities
   possibilities = dict()
   for r in range(R):
     for c in range(C):
@@ -73,7 +77,8 @@ def get_slicing_possibilities(R,C,L,H,content,preliminary_slicing_options):
       for size in preliminary_slicing_options:
         if is_valid_slicing_option(content,r,c,size,R,C,L):
           possibilities[(r,c)].append(size)
-          print("found valid slicing option: r,c={},{} size={}".format(r,c,size))
+          total_possibilities += 1
+  return possibilities
 
 # --
 if __name__ == "__main__":
@@ -104,3 +109,5 @@ if __name__ == "__main__":
     # Show this only if the parameters=valid and content=valid
     print("Preliminary slicing options for each point: {}".format(str(preliminary_slicing_options)))
     slicing_possibilities = get_slicing_possibilities(R,C,L,H,content,preliminary_slicing_options)
+    print("Total number of unique slicing possibilities: {}".format(total_possibilities))
+
