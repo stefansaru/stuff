@@ -162,29 +162,54 @@ def apply_single_permutation_square(slice_head_position, slice_slicing_variant_d
   return can_be_done, occupied, score
 
 # --
-def apply_all_permutation_squares(indexes_permutation, slice_head_list, slicing_possibilities, content, L):
+def do_slicing_from_indexes(indexes_permutation, slice_head_list, slicing_possibilities, content, L):
   solution = []
   total_score = 0
+  # Generate initial unoccupied map
+  occupied = [[False for i in range(C)] for j in range(R)]
+  #print ("indexes_permutation: {}".format(indexes_permutation))
+  #print ("slice_head_list: {}".format(slice_head_list))
+  #print ("content: {}".format(content))
+  #print ("occupied: {}".format(occupied))
+
+
   for i in range(len(indexes_permutation)):
+    #print ("Analyzing slice {}/{}".format(i,len(indexes_permutation)))
     slice_head_position = slice_head_list[i]
+    #print ("Head position is {}".format(slice_head_position))
     slice_slicing_variant_index = indexes_permutation[i]
+    #print ("Variant index is {}".format(slice_slicing_variant_index))
+
+    # -1 means do not make this slice
+    if slice_slicing_variant_index == -1:
+      continue
+    
     slice_slicing_variant_data = slicing_possibilities[slice_head_position][slice_slicing_variant_index]
-    # Generate initial unoccupied map
-    occupied = [[False for i in range(C)] for j in range(R)]
+    #print ("slice_slicing_variant_data={}".format(slice_slicing_variant_data))
+    # apply individual square permutation
     can_be_done, occupied, score = apply_single_permutation_square(slice_head_position, slice_slicing_variant_data, occupied, content, L)
-    # if this permutation can't be done, move to the next
+    # if this permutation can't be done, stop
     if can_be_done == False:
       solution = None
       total_score = 0
       return can_be_done, solution, total_score
+    # If this permutation can be done, record the steps and update score
     solution.append(slice_slicing_variant_data)
     total_score += score
-  can_be_done = True
+
+  if total_score < 1:
+    # a score of 0 means can't be done, since no slice was placed
+    can_be_done = False
+    #print("Permutation can't be done. No slice placed")
+  else:
+    #print("Permutation is valid, score={}".format(total_score))
+    # This was a valid permutation
+    can_be_done = True
   return can_be_done, solution, total_score
     
 # --
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser(description="Hash Code 2017 practice round. See https://goo.gl/4mtJR3")
+  parser = argparse.ArgumentParser(description="Hash Code 2017 practice round. See https://goo.gl/4mtJR3 ")
   parser.add_argument("input_file", help="input file")
   parser.add_argument("output_file", help="output file")
   args = parser.parse_args()
@@ -220,14 +245,29 @@ if __name__ == "__main__":
     # 
     print("Slicing can be done starting from {} points, in {} different ways".format(len(slice_head_list), len(indexes_permutations)))
     print("Searching for solutions. (This may take a while)")
-    solutions = []
+    max_score = -1
+    best_solution = None
+    num_solutions = 0
+    x = 0
     # Iterate each permutation
     for indexes_permutation in indexes_permutations:
       # Apply permutation to the map
-      can_be_done, solution, score = apply_all_permutation_squares(indexes_permutation, slice_head_list, slicing_possibilities, content, L)
+      can_be_done, solution, score = do_slicing_from_indexes(indexes_permutation, slice_head_list, slicing_possibilities, content, L)
       # Validate..
-      if can_be_done == False:
-        # Try next permutation, this variation causes slice overlap
-        continue
-      solutions.append((score,solution))
-    print("Found a total of {} solutions.".format(len(solutions)))
+      if can_be_done == True:
+        num_solutions += 1
+        if score > max_score: 
+          max_score = score
+          best_solution = solution
+          
+      # Try next permutation, this variation causes slice overlap
+      x+=1
+      #if x >2: sys.exit(0)
+
+    # How many solutions found?
+    print("Found a total of {} solutions.".format(num_solutions))
+    print("Best score: {}".format(max_score))
+    print("Best solution: {}".format(best_solution))
+
+  print("Interpreting solution TODO ")
+  print("Done")
