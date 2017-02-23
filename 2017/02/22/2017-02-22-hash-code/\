@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # using python 2.7
-import sys, argparse, itertools
+import sys, argparse
 
 # --
 def validate_parameters(R,C,L,H):
@@ -85,8 +85,6 @@ def get_slicing_possibilities(R,C,L,H,content,preliminary_slicing_options):
         if is_valid_slicing_option(content,r,c,size,R,C,L):
           possibilities[(r,c)].append(size)
           total_possibilities += 1
-
-  
   return possibilities
 
 # --
@@ -95,93 +93,21 @@ def get_meta_info(slicing_possibilities):
   slice_index_list = []
 
   slice_head_entry = (None,None)
+  slice_sizes = []
   slice_indexes = []
 
-  for head, sizes in slicing_possibilities.items():
-    if len(sizes) == 0: 
-      continue
-
+  for head, sizes in slicing_possibilities:
     slice_head_entry = head
-    slice_indexes = range(-1,len(sizes))
+    slice_sizes = sizes[:]
+    slice_indexes = range(-1,len(slice_sizes))
 
     slice_head_list.append(slice_head_entry)
     slice_index_list.append(slice_indexes)
-  
-  # Here we generate all available permutations  
-  index_permutations = list(itertools.product(*slice_index_list))
-
-  return slice_head_list, index_permutations
-
-def apply_single_permutation_square(slice_head_position, slice_slicing_variant_data, occupied, content, L):
-  # head position must be vacant (not occupied == True)
-  r = slice_head_position[0]
-  c = slice_head_position[1]
-
-  if occupied[r][c] == True:
-    can_be_done = False
-    return can_be_done, occupied,0
-
-  # look for all of the slice's squares, and make sure they are vacant (not occupied == True)
-  num_rows = slice_slicing_variant_data[0]
-  num_cols = slice_slicing_variant_data[1]
-  num_M = 0
-  num_T = 0
-  slice_squares = []
-
-  ri = r
-  for i in range (num_rows):
-    ci = c
-    for j in range (num_cols):
-      if occupied[ri][ci] == True:
-        can_be_done = False
-        return can_be_done, occupied,0
-      if content[ri][ci] == 'M':
-        num_M+=1
-      elif content[ri][ci] == 'T':
-        num_T+=1
-      slice_squares.append((ri,ci))
-      ci+=1
-    ri+=1
-
-  # it can be done, since all required squares are vacant
-  # now check if there are enough toppings
-  if num_M < L or num_T < L:
-    can_be_done = False
-    score = 0
-    return can_be_done, occupied, score
-
-  # the squares are vacant and there are enough toppings
-  # now mark the slice, by occupying its squares
-  for square in slice_squares:
-    ri = square[0]
-    ci = square[1]
-    occupied[ri][ci] = True
-
-  can_be_done = True
-  score = num_rows * num_cols
-  return can_be_done, occupied, score
-
-# --
-def apply_all_permutation_squares(indexes_permutation, slice_head_list, slicing_possibilities, content, L):
-  solution = []
-  total_score = 0
-  for i in range(len(indexes_permutation)):
-    slice_head_position = slice_head_list[i]
-    slice_slicing_variant_index = indexes_permutation[i]
-    slice_slicing_variant_data = slicing_possibilities[slice_head_position][slice_slicing_variant_index]
-    # Generate initial unoccupied map
-    occupied = [[False for i in range(C)] for j in range(R)]
-    can_be_done, occupied, score = apply_single_permutation_square(slice_head_position, slice_slicing_variant_data, occupied, content, L)
-    # if this permutation can't be done, move to the next
-    if can_be_done == False:
-      solution = None
-      total_score = 0
-      return can_be_done, solution, total_score
-    solution.append(slice_slicing_variant_data)
-    total_score += score
-  can_be_done = True
-  return can_be_done, solution, total_score
     
+  print "slice_head_list: " + slice_head_list
+  print "slice_index_list: " + slice_index_list
+
+
 # --
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description="Hash Code 2017 practice round. See https://goo.gl/4mtJR3")
@@ -215,19 +141,5 @@ if __name__ == "__main__":
     # Calculate boundaries of slice count
     max_slice_count = min(count_M,count_T) / L
     print("Maximum number of slices: {}".format(max_slice_count))
-    # Calculate meta information required for permutations
-    slice_head_list, indexes_permutations = get_meta_info(slicing_possibilities)
-    # 
-    print("Slicing can be done starting from {} points, in {} different ways".format(len(slice_head_list), len(indexes_permutations)))
-    print("Searching for solutions. (This may take a while)")
-    solutions = []
-    # Iterate each permutation
-    for indexes_permutation in indexes_permutations:
-      # Apply permutation to the map
-      can_be_done, solution, score = apply_all_permutation_squares(indexes_permutation, slice_head_list, slicing_possibilities, content, L)
-      # Validate..
-      if can_be_done == False:
-        # Try next permutation, this variation causes slice overlap
-        continue
-      solutions.append((score,solution))
-    print("Found a total of {} solutions.".format(len(solutions)))
+
+    get_meta_info(slicing_possibilities)
