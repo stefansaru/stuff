@@ -194,7 +194,7 @@ def do_slicing_from_indexes(indexes_permutation, slice_head_list, slicing_possib
       total_score = 0
       return can_be_done, solution, total_score
     # If this permutation can be done, record the steps and update score
-    solution.append(slice_slicing_variant_data)
+    solution.append((slice_head_position,slice_slicing_variant_data))
     total_score += score
 
   if total_score < 1:
@@ -240,6 +240,7 @@ if __name__ == "__main__":
     # Calculate boundaries of slice count
     max_slice_count = min(count_M,count_T) / L
     print("Maximum number of slices: {}".format(max_slice_count))
+    print("Calculating how many ways can the slicing be done. (This may take a while)")
     # Calculate meta information required for permutations
     slice_head_list, indexes_permutations = get_meta_info(slicing_possibilities)
     # 
@@ -248,7 +249,7 @@ if __name__ == "__main__":
     max_score = -1
     best_solution = None
     num_solutions = 0
-    x = 0
+    #x = 0
     # Iterate each permutation
     for indexes_permutation in indexes_permutations:
       # Apply permutation to the map
@@ -261,13 +262,29 @@ if __name__ == "__main__":
           best_solution = solution
           
       # Try next permutation, this variation causes slice overlap
-      x+=1
+      #x+=1
       #if x >2: sys.exit(0)
 
     # How many solutions found?
     print("Found a total of {} solutions.".format(num_solutions))
-    print("Best score: {}".format(max_score))
-    print("Best solution: {}".format(best_solution))
+    print("Best solution score: {}".format(max_score))
+    #print("Best solution: {}".format(best_solution))
+    num_slices_best_solution = len(best_solution)
+    print("Best solution slice count: {}".format(num_slices_best_solution))
+    output_file.write("{}\n".format(num_slices_best_solution))
+    for slice_item in best_solution:
+      #print("slice_item: {}".format(slice_item))
+      row_start = slice_item[0][0]
+      col_start = slice_item[0][1]
+      row_end = slice_item[1][0] + row_start - 1
+      col_end = slice_item[1][1] + col_start - 1
+      #print("row_start: {}".format(row_start))
+      #print("row_end: {}".format(row_end))
+      #print("col_start: {}".format(col_start))
+      #print("col_end: {}".format(col_end))
+      output_file.write("{} {} {} {}\n".format(row_start, col_start, row_end, col_end)) 
+      
+    print("Output file: Solution written according to format in {}".format (args.output_file))
 
-  print("Interpreting solution TODO ")
+  # --
   print("Done")
