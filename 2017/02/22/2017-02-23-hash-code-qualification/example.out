@@ -1,0 +1,113 @@
+cache servers:
+  count: 3
+  capacity: 100
+  2:
+    endpoints:
+      count: 1
+      latency:
+        0: 200
+  0:
+    endpoints:
+      count: 1
+      latency:
+        0: 100
+  1:
+    endpoints:
+      count: 1
+      latency:
+        0: 300
+endpoints:
+  count: 2
+  0:
+    cache servers:
+      count: 3
+      latency:
+        0: 100
+        1: 300
+        2: 200
+    datacenter latency: 1000
+  1:
+    cache servers:
+      count: 0
+      latency: {}
+    datacenter latency: 500
+input file: example.in
+output file: example.out
+requests:
+  for video:
+    0:
+      from endpoint:
+        1: 1000
+    1:
+      from endpoint:
+        0: 1000
+    3:
+      from endpoint:
+        0: 1500
+    4:
+      from endpoint:
+        0: 500
+  from endpoint:
+    0:
+      for video:
+        1: 1000
+    1:
+      for video:
+        0: 1000
+videos:
+  count: 5
+  0:
+    best latency if stored in: -1
+    requests from endpoint:
+      0: 0
+      1: 1000
+    size: 50
+    total delay if stored in:
+      0: 0
+      1: 0
+      2: 0
+      datacenter: 1500000
+  2:
+    best latency if stored in: -1
+    requests from endpoint:
+      0: 0
+      1: 0
+    size: 80
+    total delay if stored in:
+      0: 0
+      1: 0
+      2: 0
+      datacenter: 0
+  3:
+    best latency if stored in: -1
+    requests from endpoint:
+      0: 1500
+      1: 0
+    size: 30
+    total delay if stored in:
+      0: 150000
+      1: 450000
+      2: 300000
+      datacenter: 4500000
+  4:
+    best latency if stored in: -1
+    requests from endpoint:
+      0: 500
+      1: 0
+    size: 110
+    total delay if stored in:
+      0: 50000
+      1: 150000
+      2: 100000
+      datacenter: 1500000
+  1:
+    best latency if stored in: -1
+    requests from endpoint:
+      0: 1000
+      1: 0
+    size: 50
+    total delay if stored in:
+      0: 100000
+      1: 300000
+      2: 200000
+      datacenter: 3000000
