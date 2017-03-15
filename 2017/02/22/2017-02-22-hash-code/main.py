@@ -86,7 +86,6 @@ def get_slicing_possibilities(R,C,L,H,content,preliminary_slicing_options):
           possibilities[(r,c)].append(size)
           total_possibilities += 1
 
-  
   return possibilities
 
 # --
@@ -112,14 +111,14 @@ def get_meta_info(slicing_possibilities):
 
   return slice_head_list, index_permutations
 
-def apply_single_permutation_square(slice_head_position, slice_slicing_variant_data, occupied, content, L):
+def apply_single_permutation_square(slice_head_position, slice_slicing_variant_data, occupied, content, L, excluded, slice_head_list):
   # head position must be vacant (not occupied == True)
   r = slice_head_position[0]
   c = slice_head_position[1]
 
   if occupied[r][c] == True:
     can_be_done = False
-    return can_be_done, occupied,0
+    return can_be_done, occupied,0,None
 
   # look for all of the slice's squares, and make sure they are vacant (not occupied == True)
   num_rows = slice_slicing_variant_data[0]
@@ -134,7 +133,7 @@ def apply_single_permutation_square(slice_head_position, slice_slicing_variant_d
     for j in range (num_cols):
       if occupied[ri][ci] == True:
         can_be_done = False
-        return can_be_done, occupied,0
+        return can_be_done, occupied,0,None
       if content[ri][ci] == 'M':
         num_M+=1
       elif content[ri][ci] == 'T':
@@ -148,7 +147,7 @@ def apply_single_permutation_square(slice_head_position, slice_slicing_variant_d
   if num_M < L or num_T < L:
     can_be_done = False
     score = 0
-    return can_be_done, occupied, score
+    return can_be_done, occupied, score, None
 
   # the squares are vacant and there are enough toppings
   # now mark the slice, by occupying its squares
@@ -157,9 +156,17 @@ def apply_single_permutation_square(slice_head_position, slice_slicing_variant_d
     ci = square[1]
     occupied[ri][ci] = True
 
+  # exclude the other slice starting points contained by this slice
+  for x in slice_head_list:
+    rx = x[0]
+    cx = x[1]
+    if rx >= r and rx < r+num_rows and cx >=c and cx < c+num_cols:
+      # exclude!
+      excluded.append(x)
+
   can_be_done = True
   score = num_rows * num_cols
-  return can_be_done, occupied, score
+  return can_be_done, occupied, score, excluded
 
 # --
 def do_slicing_from_indexes(indexes_permutation, slice_head_list, slicing_possibilities, content, L):
@@ -167,6 +174,9 @@ def do_slicing_from_indexes(indexes_permutation, slice_head_list, slicing_possib
   total_score = 0
   # Generate initial unoccupied map
   occupied = [[False for i in range(C)] for j in range(R)]
+
+  # excluded from parsing, initially none, but as we add new slices, some slices contain new start points which no loger can be used
+  excluded = []
   #print ("indexes_permutation: {}".format(indexes_permutation))
   #print ("slice_head_list: {}".format(slice_head_list))
   #print ("content: {}".format(content))
@@ -187,7 +197,12 @@ def do_slicing_from_indexes(indexes_permutation, slice_head_list, slicing_possib
     slice_slicing_variant_data = slicing_possibilities[slice_head_position][slice_slicing_variant_index]
     #print ("slice_slicing_variant_data={}".format(slice_slicing_variant_data))
     # apply individual square permutation
-    can_be_done, occupied, score = apply_single_permutation_square(slice_head_position, slice_slicing_variant_data, occupied, content, L)
+
+    # means we can skip
+    if slice_head_position in excluded:
+      continue
+
+    can_be_done, occupied, score, excluded = apply_single_permutation_square(slice_head_position, slice_slicing_variant_data, occupied, content, L, excluded, slice_head_list)
     # if this permutation can't be done, stop
     if can_be_done == False:
       solution = None
