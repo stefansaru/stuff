@@ -1,0 +1,120 @@
+# --- rhs11 map file
+
+# num lines & columns
+12 12
+
+# num obstacles
+12
+
+# obstacles:
+ 1  0
+ 0  4
+ 1  0
+ 1  4
+ 2  0
+ 2  4
+ 3  0
+ 3  4
+ 4  4
+ 5  4
+10  0
+10  2
+
+# num cars
+1
+
+# car 1
+6 # num points
+1 1
+1 3
+2 2
+2 3
+3 3
+4 1
+3 # number of move directions
+N S SW # move directions
+
+# solution
+
+# number of cars involved in solution
+1
+
+# first car involved in solution
+0 # car index
+8 # head line
+1 # head column
+
+
+#
+#   the map:
+#
+#   ...........
+#   #A.A#......
+#   #.AA#......
+#   #..A#......
+#   #A..#......
+#   ....#......
+#   ....#......
+#   ...........
+#   ...........
+#   ...........
+#   ...........
+#   #.#........
+
+
+
+  Conventions
+  -----------  
+  
+  !comments
+  
+  A comment is considered any string that begins with the exclamation mark '!',
+  and ends with a  new-line '\n'.  Comments,  spaces,  tabs  and new-lines  are
+  skipped in the parsing process.
+  
+  0-based dimensions
+  
+  The  coordinates  and indexes are  zero-based.  What this means is that for a
+  point  on the  map at a given  location (x,y) we  will write  the location as
+  (x-1,y-1), e.g. the first line is #0.  Also, the indexes are zero-based, i.e.
+  if we have a list of 3 cars, we number them 0,1 and 2.
+  
+  map as a char matrix
+  
+  The  map is rectangular  and contains walls  '#', empty spaces '.' and  cars.
+  So the most suggestive way to see the map  is by viewing it as a char matrix.
+  
+  car movement
+  
+  A car can move in 8 directions: N,S,E,W,NE,NW,SE,SW and because of that we'll
+  be using an unsigned char to store car movement. Each move corresponds with a
+  bit. If the bit is set '1', the car can move in that direction. If the bit is
+  not set '0' the car cannot move in that direction. A car with no movement bit
+  set, i.e. movement bitboard is 0, is considered an obstacle, or wall.
+  
+  cars a,b,c,...
+  
+  The cars are drawn onto the map  using letters and numbers. Depending  on how
+  many cars are present on the map, they can be represented using the following
+  character set: a-zA-Z0-9 and 
+
+  How is the map represented?
+  ---------------------------
+  
+  The map can be viewed as a character matrix with
+  * empty spaces ('.'), walls ('#'), and
+  * cars ('A','B','C',...)
+  The number of lines,columns,walls and cars are specified at the beginning
+  of this file. Cars and walls require some coordinates, but empty spaces 
+  don't. All the coordinates in this file are 0-based; thus the first 
+  line is #0 and the last line is #(numLines-1). Also all the indexes are
+  0-based; thus car#1 has index 0 and car#numCars has index numCars-1.
+
+  How to represent a car?
+  -----------------------
+
+  Each car has associated with it a letter. The letters are 'A','B','C'...
+  Suppose you want to represent car #1, which has associated with it the 
+  letter 'A'. If you were to parse the character matrix, top-bottom and 
+  left-right, the first char equal to 'A' is the head of car #1.
+
